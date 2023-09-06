@@ -6,7 +6,13 @@ from langchain.agents import AgentExecutor
 from langchain.agents.agent_types import AgentType
 from langchain.chat_models import ChatOpenAI
 
-mssql_uri = f"mssql+pymssql://sushant:Solarsystem$123@sqlgpt.database.windows.net:1433/sqlgpt"
+import environ
+env = environ.Env()
+environ.Env.read_env()
+
+OPENAI_API_KEY = env('OPENAI_API_KEY')
+
+mssql_uri = f"mssql+pymssql://{env('DBUSER')}:{env('DBPASS')}@{env('DATABASE')}.database.windows.net:1433/{env('SERVER')}"
 
 db = SQLDatabase.from_uri(mssql_uri)
 
