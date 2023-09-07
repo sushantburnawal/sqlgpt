@@ -7,12 +7,10 @@ from langchain.agents.agent_types import AgentType
 from langchain.chat_models import ChatOpenAI
 import streamlit as st
 
-import environ
 
 
 def ask_question(query):
-    env = environ.Env()
-    environ.Env.read_env()
+    
 
     OPENAI_API_KEY = st.secrets['OPENAI_API_KEY']
 
