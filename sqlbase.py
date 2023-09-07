@@ -15,8 +15,10 @@ def ask_question(query):
     OPENAI_API_KEY = st.secrets['OPENAI_API_KEY']
 
     mssql_uri = f"mssql+pymssql://{st.secrets['DBUSER']}:{st.secrets['DBPASS']}@{st.secrets['DATABASE']}.database.windows.net:1433/{st.secrets['SERVER']}"
-
-    db = SQLDatabase.from_uri(mssql_uri)
+    try:
+        db = SQLDatabase.from_uri(mssql_uri)
+    except Exception as e:
+        st.write(e)
     gpt = OpenAI(openai_api_key=OPENAI_API_KEY, model_name='gpt-3.5-turbo')
 
     toolkit = SQLDatabaseToolkit(db=db, llm=gpt)
