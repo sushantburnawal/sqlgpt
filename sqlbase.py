@@ -8,33 +8,29 @@ from langchain.chat_models import ChatOpenAI
 import streamlit as st
 
 import environ
-env = environ.Env()
-environ.Env.read_env()
 
-OPENAI_API_KEY = env('OPENAI_API_KEY')
-
-mssql_uri = f"mssql+pymssql://{env('DBUSER')}:{env('DBPASS')}@{env('DATABASE')}.database.windows.net:1433/{env('SERVER')}"
-
-db = SQLDatabase.from_uri(mssql_uri)
-gpt = OpenAI(openai_api_key=OPENAI_API_KEY, model_name='gpt-3.5-turbo')
-
-toolkit = SQLDatabaseToolkit(db=db, llm=gpt)
-agent_executor = create_sql_agent(
-    llm=gpt,
-    toolkit=toolkit,
-    verbose=True,
-    agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-)
 
 def ask_question(query):
-    
+    env = environ.Env()
+    environ.Env.read_env()
+
+    OPENAI_API_KEY = env('OPENAI_API_KEY')
+
+    mssql_uri = f"mssql+pymssql://{env('DBUSER')}:{env('DBPASS')}@{env('DATABASE')}.database.windows.net:1433/{env('SERVER')}"
+
+    db = SQLDatabase.from_uri(mssql_uri)
+    gpt = OpenAI(openai_api_key=OPENAI_API_KEY, model_name='gpt-3.5-turbo')
+
+    toolkit = SQLDatabaseToolkit(db=db, llm=gpt)
+    agent_executor = create_sql_agent(
+        llm=gpt,
+        toolkit=toolkit,
+        verbose=True,
+        agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    )
+        
     result = agent_executor.run(query)
     return result["answer"]
-
-#command = input("User Question >> ")
-#response = ask_question(command)
-#print(f"\nAnswer : {response}\n")    
-
 
 st.title("QueryGPT 🧳 👨🏾‍⚖️")
 question_input = st.text_input("Ask a Question on the Database:")
