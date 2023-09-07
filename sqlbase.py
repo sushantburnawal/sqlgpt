@@ -28,9 +28,11 @@ def ask_question(query):
         verbose=True,
         agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
     )
-        
-    result = agent_executor.run(query)
-    return result["answer"]
+    
+    try:
+        st.write("Answer:\n\n",agent_executor.run(query))
+    except Exception as e:
+        print(e)
 
 st.title("QueryGPT 🧳 👨🏾‍⚖️")
 question_input = st.text_input("Ask a Question on the Database:")
@@ -40,7 +42,7 @@ if question_input!="":
     with st.spinner("Searching. Please hold..."):
 
         try:
-            st.write("Answer:\n\n",ask_question(question_input))
+            ask_question(question_input)
         except Exception as e:
             print(e)
    
