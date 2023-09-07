@@ -6,15 +6,19 @@ from langchain.agents import AgentExecutor
 from langchain.agents.agent_types import AgentType
 from langchain.chat_models import ChatOpenAI
 import streamlit as st
-
+import environ
 
 
 def ask_question(query):
+    env = environ.Env()
+    environ.Env.read_env()
+
+    OPENAI_API_KEY = env('OPENAI_API_KEY')
     
 
     OPENAI_API_KEY = st.secrets['OPENAI_API_KEY']
 
-    mssql_uri = f"mssql+pymssql://{st.secrets['DBUSER']}:{st.secrets['DBPASS']}@{st.secrets['DATABASE']}.database.windows.net:1433/{st.secrets['SERVER']}"
+    mssql_uri = f"mssql+pymssql://{env('DBUSER')}:{env('DBPASS')}@{env('DATABASE')}.database.windows.net:1433/{env('SERVER')}"
     try:
         db = SQLDatabase.from_uri(mssql_uri)
     except Exception as e:
