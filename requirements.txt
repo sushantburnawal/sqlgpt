@@ -1,0 +1,5 @@
+langchain
+pymssql
+openai
+python-dotenv
+streamlit
