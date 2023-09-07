@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
     freetds-dev
 
 
-RUN git clone https://github.com/sushantburnawal/sqlgpt/tree/master .
+RUN git clone https://github.com/sushantburnawal/sqlgpt .
 
 RUN pip3 install -r requirements.txt
 

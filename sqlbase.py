@@ -16,7 +16,7 @@ def ask_question(query):
     OPENAI_API_KEY = env('OPENAI_API_KEY')
     
 
-    OPENAI_API_KEY = st.secrets['OPENAI_API_KEY']
+    #OPENAI_API_KEY = st.secrets['OPENAI_API_KEY']
 
     mssql_uri = f"mssql+pymssql://{env('DBUSER')}:{env('DBPASS')}@{env('DATABASE')}.database.windows.net:1433/{env('SERVER')}"
     try:
