@@ -9,19 +9,43 @@ import streamlit as st
 import environ
 import openai
 
-def is_api_key_valid():
-    # try:
-    #     response = openai.Completion.create(
-    #         engine="davinci",
-    #         prompt="This is a test.",
-    #         max_tokens=5
-    #     )
-    #     print(response)
-    # except:
-    #     print('1')
-    #     return False
-    # print('2')
-    return True
+import requests
+
+def is_openai_api_key_valid(api_key):
+    """
+    Check if an OpenAI API key is valid by making a simple request to the API.
+
+    Args:
+        api_key (str): The OpenAI API key to be checked.
+
+    Returns:
+        bool: True if the API key is valid, False otherwise.
+    """
+    # Define the API endpoint you want to test
+    api_endpoint = "https://api.openai.com/v1/models"
+
+    # Set up the request headers with the API key
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
+
+    try:
+        # Make a GET request to the API
+        print(1)
+        response = requests.get(api_endpoint, headers=headers)
+        print(response)
+        print(2)
+        # Check the response status code
+        if response.status_code == 200:
+            return True  # API key is valid
+        else:
+            return False  # API key is invalid
+
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return False  # An error occurred, assume the key is invalid
+
 def ask_question(api_key,query):
     env = environ.Env()
     environ.Env.read_env()
@@ -52,19 +76,22 @@ def ask_question(api_key,query):
 
 st.title("QueryGPT 🧳 👨🏾‍⚖️")
 api_key = st.text_input("OpenAI API Key:")
-if is_api_key_valid():
-    question_input = st.text_input("Ask a Question on the Database:")
+question_input = st.text_input("Ask a Question on the Database:")
+if st.button("Submit Question"):
+    #question_input = st.text_input("Ask a Question on the Database:")
+    if is_openai_api_key_valid(api_key):
+        if question_input!="":
+            
+            with st.spinner("Searching. Please hold..."):
 
-    if question_input!="":
-        
-        with st.spinner("Searching. Please hold..."):
-
-            try:
-                ask_question(api_key,question_input)
-            except Exception as e:
-                print(e)
-else :
-    st.warning("Invalid API Key",icon="⚠️")
+                try:
+                    ask_question(api_key,question_input)
+                except Exception as e:
+                    print(e)
+        else:
+            st.warning("Question cannot be empty",icon="⚠️")
+    else :
+        st.warning("Invalid API Key",icon="⚠️")
 
    
         #st.write("Answer:\n\n",agent_executor.run(question_input))
