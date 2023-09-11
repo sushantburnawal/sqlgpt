@@ -34,7 +34,7 @@ def ask_question(api_key,query):
         db = SQLDatabase.from_uri(mssql_uri)
     except Exception as e:
         st.write(e)
-    gpt = ChatOpenAI(openai_api_key=api_key, model_name='gpt-3.5-turbo')
+    gpt = ChatOpenAI(openai_api_key=api_key, model_name='gpt-4')
 
     toolkit = SQLDatabaseToolkit(db=db, llm=gpt)
     agent_executor = create_sql_agent(
@@ -42,6 +42,7 @@ def ask_question(api_key,query):
         toolkit=toolkit,
         verbose=True,
         agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+        handle_parsing_errors=True
     )
     
     try:
