@@ -3,3 +3,4 @@ pymssql
 openai
 python-dotenv
 streamlit
+python-environ

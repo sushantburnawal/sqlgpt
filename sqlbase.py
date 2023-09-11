@@ -12,8 +12,6 @@ import environ
 def ask_question(query):
     env = environ.Env()
     environ.Env.read_env()
-
-    OPENAI_API_KEY = env('OPENAI_API_KEY')
     
 
     #OPENAI_API_KEY = st.secrets['OPENAI_API_KEY']
@@ -23,7 +21,7 @@ def ask_question(query):
         db = SQLDatabase.from_uri(mssql_uri)
     except Exception as e:
         st.write(e)
-    gpt = OpenAI(openai_api_key=OPENAI_API_KEY, model_name='gpt-3.5-turbo')
+    gpt = ChatOpenAI(openai_api_key=env('OPENAI_API_KEY'), model_name='gpt-3.5-turbo')
 
     toolkit = SQLDatabaseToolkit(db=db, llm=gpt)
     agent_executor = create_sql_agent(
