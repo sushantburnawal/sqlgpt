@@ -7,9 +7,22 @@ from langchain.agents.agent_types import AgentType
 from langchain.chat_models import ChatOpenAI
 import streamlit as st
 import environ
+import openai
 
-
-def ask_question(query):
+def is_api_key_valid():
+    # try:
+    #     response = openai.Completion.create(
+    #         engine="davinci",
+    #         prompt="This is a test.",
+    #         max_tokens=5
+    #     )
+    #     print(response)
+    # except:
+    #     print('1')
+    #     return False
+    # print('2')
+    return True
+def ask_question(api_key,query):
     env = environ.Env()
     environ.Env.read_env()
     
@@ -21,7 +34,7 @@ def ask_question(query):
         db = SQLDatabase.from_uri(mssql_uri)
     except Exception as e:
         st.write(e)
-    gpt = ChatOpenAI(openai_api_key=env('OPENAI_API_KEY'), model_name='gpt-3.5-turbo')
+    gpt = ChatOpenAI(openai_api_key=api_key, model_name='gpt-3.5-turbo')
 
     toolkit = SQLDatabaseToolkit(db=db, llm=gpt)
     agent_executor = create_sql_agent(
@@ -37,16 +50,21 @@ def ask_question(query):
         print(e)
 
 st.title("QueryGPT 🧳 👨🏾‍⚖️")
-question_input = st.text_input("Ask a Question on the Database:")
+api_key = st.text_input("OpenAI API Key:")
+if is_api_key_valid():
+    question_input = st.text_input("Ask a Question on the Database:")
 
-if question_input!="":
-    
-    with st.spinner("Searching. Please hold..."):
+    if question_input!="":
+        
+        with st.spinner("Searching. Please hold..."):
 
-        try:
-            ask_question(question_input)
-        except Exception as e:
-            print(e)
+            try:
+                ask_question(api_key,question_input)
+            except Exception as e:
+                print(e)
+else :
+    st.warning("Invalid API Key",icon="⚠️")
+
    
         #st.write("Answer:\n\n",agent_executor.run(question_input))
 
