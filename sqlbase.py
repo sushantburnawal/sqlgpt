@@ -57,8 +57,8 @@ def ask_question(api_key,query):
     try:
         db = SQLDatabase.from_uri(mssql_uri)
     except Exception as e:
-        st.write(e)
-    gpt = ChatOpenAI(openai_api_key=api_key, model_name='gpt-4')
+        st.warning("Error Connecting to Database",icon="🚨")
+    gpt = ChatOpenAI(openai_api_key=api_key, model_name='gpt-3.5-turbo-16k')
 
     toolkit = SQLDatabaseToolkit(db=db, llm=gpt)
     agent_executor = create_sql_agent(
@@ -66,13 +66,16 @@ def ask_question(api_key,query):
         toolkit=toolkit,
         verbose=True,
         agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-        handle_parsing_errors=True
+        handle_parsing_errors="Check your output and make sure it conforms!"
     )
     
     try:
         st.write("Answer:\n\n",agent_executor.run(query))
     except Exception as e:
-        print(e)
+        response = str(e)
+        if not response.startswith("Could not parse LLM output: `"):
+            raise e
+        response = response.removeprefix("Could not parse LLM output: `").removesuffix("`")
 
 st.title("QueryGPT 🧳 👨🏾‍⚖️")
 api_key = st.text_input("OpenAI API Key:")
