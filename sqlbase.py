@@ -8,8 +8,10 @@ from langchain.chat_models import ChatOpenAI
 import streamlit as st
 import environ
 import openai
-
 import requests
+import random
+import time
+
 
 def is_openai_api_key_valid(api_key):
     """
@@ -46,6 +48,16 @@ def is_openai_api_key_valid(api_key):
         print(f"An error occurred: {str(e)}")
         return False  # An error occurred, assume the key is invalid
 
+
+def completion_with_backoff(**kwargs):
+    for i in range(5):
+        try:
+            return ChatOpenAI(**kwargs)
+        except openai.error.RateLimitError:
+            wait_time = (2 ** i) + random.random()
+            time.sleep(wait_time)
+    raise Exception("Still hitting rate limit after max retries")
+
 def ask_question(api_key,query):
     env = environ.Env()
     environ.Env.read_env()
@@ -58,7 +70,7 @@ def ask_question(api_key,query):
         db = SQLDatabase.from_uri(mssql_uri)
     except Exception as e:
         st.warning("Error Connecting to Database",icon="🚨")
-    gpt = ChatOpenAI(openai_api_key=api_key, model_name='gpt-3.5-turbo-16k')
+    gpt = completion_with_backoff(openai_api_key=api_key, model_name='gpt-3.5-turbo-16k')
 
     toolkit = SQLDatabaseToolkit(db=db, llm=gpt)
     agent_executor = create_sql_agent(
